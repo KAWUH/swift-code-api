@@ -1,0 +1,23 @@
+services:
+  db_test:
+    image: postgres:15-alpine
+    container_name: swift_db_test
+    restart: always
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: swift_codes_test_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_test_data:/var/lib/postgresql/data
+    networks:
+      - swiftnet_test
+
+volumes:
+  postgres_test_data:
+    driver: local
+
+networks:
+  swiftnet_test:
+    driver: bridge

@@ -1,0 +1,39 @@
+services:
+  db:
+    image: postgres:15-alpine
+    container_name: swift_db
+    restart: always
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-password}
+      POSTGRES_DB: ${POSTGRES_DB:-swift_codes_db}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - swiftnet
+
+  app:
+    build: .
+    container_name: swift_app
+    restart: unless-stopped
+    depends_on:
+      - db
+    ports:
+      - "8080:8080"
+    environment:
+      SWIFT_DB_URL: postgresql://${POSTGRES_USER:-user}:${POSTGRES_PASSWORD:-password}@db:5432/${POSTGRES_DB:-swift_codes_db}?schema=public
+      PORT: 8080
+    volumes:
+      - ./data:/app/data:ro
+    networks:
+      - swiftnet
+
+networks:
+  swiftnet:
+    driver: bridge
+
+volumes:
+  postgres_data:
+    driver: local

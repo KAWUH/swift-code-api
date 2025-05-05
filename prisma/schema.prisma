@@ -1,0 +1,26 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("SWIFT_DB_URL")
+}
+
+model SwiftCode {
+  swiftCode     String  @id @unique // Full SWIFT code
+  bankName      String
+  address       String? // Address is optional
+  countryName   String  // Always uppercase
+  countryISO2   String  // Always uppercase, ISO 3166-1 alpha-2
+  isHeadquarter Boolean
+  // Store the first 8 chars for easy headquarter lookup for branches
+  headquarterIdentifier String
+
+  @@index([countryISO2])
+  @@index([headquarterIdentifier])
+  @@index([isHeadquarter])
+}
